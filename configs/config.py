@@ -11,7 +11,7 @@ rawPath = os.path.join(parentPath, 'data/webanno_raw')
 
 #path of loading preprocessed data file
 preprocessFile = os.path.join(parentPath, 'results/preprocess',
-                                'preprocess_1212_1212.csv')
+                                'preprocess_1216_1534.csv')
 
 
 #path to save preprocessed data file
@@ -21,7 +21,6 @@ preprocessPath = os.path.join(parentPath, 'results/preprocess', preprocessName)
 #path to save graph
 graphFolder = os.path.join(parentPath, 'results/graph')
 graphPath = os.path.join(graphFolder, ttime)
-
 if not os.path.exists(graphPath):
     os.makedirs(graphPath)
 
@@ -30,3 +29,8 @@ edaFolder = os.path.join(parentPath, 'results/eda')
 edaPath = os.path.join(edaFolder, ttime)
 if not os.path.exists(edaPath):
     os.makedirs(edaPath)
+
+#path of vocab file
+vocabFile = os.path.join(parentPath, 'results/eda/1216_1545', 'vocab.csv')
+#path of processed file
+processedFile = os.path.join(parentPath, 'results/eda/1216_1545', 'processed.csv')

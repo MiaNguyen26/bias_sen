@@ -21,23 +21,27 @@ from configs import config
 from .eda import EDA
 
 class Graph:
-    def __init__(self, dfProcess, mostcommon):
+    def __init__(self, dfProcess, mostcommon, allwords, listVocab, charCount):
         self.dfProcess = dfProcess
         self.mostcommon = mostcommon
+        self.allwords = allwords
+        self.listVocab = listVocab
+        self.charCount = charCount
     
-    def graph_sentiment(self):
-        plt.figure(figsize=(50,30))
-        plt.margins(0.02)
-        plt.xlabel('Sentiment', fontsize=50)
-        plt.xticks(fontsize=40)
-        plt.ylabel('Frequency', fontsize=50)
-        plt.yticks(fontsize=40)
-        plt.hist(self.dfProcess['sentiment'], bins=50)
-        plt.title('Sentiment Distribution', fontsize=60)
-        plt.savefig(os.path.join(config.graphPath, 'sentiment.png'))
+    # def graph_sentiment(self):
+    #     plt.figure(figsize=(50,30))
+    #     plt.margins(0.02)
+    #     plt.xlabel('Sentiment', fontsize=50)
+    #     plt.xticks(fontsize=40)
+    #     plt.ylabel('Frequency', fontsize=50)
+    #     plt.yticks(fontsize=40)
+    #     plt.hist(self.dfProcess['sentiment'], bins=50)
+    #     plt.title('Sentiment Distribution', fontsize=60)
+    #     plt.savefig(os.path.join(config.graphPath, 'sentiment.png'))
 
     def graph_word_count(self):
-        correlation = self.dfProcess[['word_count', 'sentiment', 'review_len']].corr()
+        #correlation heatmap for word count and review length
+        correlation = self.dfProcess[['word_count',  'review_len']].corr()
         mask = np.zeros_like(correlation, dtype=np.bool)
         mask[np.triu_indices_from(mask)] = True
         plt.figure(figsize=(50,30))
@@ -48,6 +52,7 @@ class Graph:
         plt.title('Correlation Heatmap', fontsize=60)
         plt.savefig(os.path.join(config.graphPath, 'heatmap.png'))
 
+        
     def graph_word_common(self, num=25):
         x, y = zip(*self.mostcommon)
 
@@ -61,23 +66,41 @@ class Graph:
         plt.title('Frequency of {} Words'.format(num), fontsize=60)
         plt.savefig(os.path.join(config.graphPath, 'wordcommon.png'))
 
+    def graph_vocal(self):
+        
+        bin = 70
+        fig = plt.figure(figsize=(50,30))
+        # plt.margins(0.02)
+        fig, ax = plt.subplots()
+        ax.hist(self.charCount, bins=bin)
+        plt.xlabel('Words', fontsize=50)
+        plt.ylabel('Frequency', fontsize=50)
+        ax.yticks(fontsize=40)
+        ax.xticks(rotation=60, fontsize=40)
+        ax.xlim([0,30])
+        #remove the first tick in x axis
+
+        xticks = ax.xaxis.get_major_ticks()
+        xticks[0].label1.set_visible(False)
+
+        plt.title('Frequency of Vocabulary with bin = {}'.format(bin), fontsize=60)
+        plt.savefig(os.path.join(config.graphPath, 'vocal.png'))
+
+
 
 
 def _test():
-    num = int(input("Enter the number of words to count frequency: "))
-    df = pd.read_csv(config.preprocessFile)
-    eda = EDA(df)
-    dfProcess = eda.sentiment_analysis()
-    dfProcess = eda.word_count()
-    mostcommon = eda.word_common(num)
-    doc = eda.count_vectorizer()
-    doc_tfidf = eda.tfidf_vectorizer()
-    dfProcess.to_csv(os.path.join(config.parentPath, 'results', 'processed.csv'))
 
-    graph = Graph(dfProcess, mostcommon)
-    graph.graph_sentiment()
-    graph.graph_word_count()
+    num = int(input("Enter the number of common words: "))
+    dfProcess = pd.read_csv(config.processedFile)
+    # dfProcess = pd.read_csv(config.processedFile)
+    eda= EDA(dfProcess)
+    allwords, listVocab, charVocab, mostcommon = eda.vocab(num)
+    
+    graph = Graph(dfProcess, mostcommon, allwords, listVocab, charVocab)
+    # graph.graph_word_count()
     graph.graph_word_common(num)
+    graph.graph_vocal()
 
 
 if __name__ == '__main__':

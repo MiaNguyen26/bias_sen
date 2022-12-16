@@ -8,15 +8,31 @@ import re
 import pyvi
 from pyvi import ViTokenizer, ViPosTagger, ViUtils
 
-from ..configs import config
+from configs import config
 
 emoji_pattern = re.compile("["
-        u"\U0001F600-\U0001F64F"  # emoticons
-        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-        u"\U0001F680-\U0001F6FF"  # transport & map symbols
-        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-        u"<3"
-                           "]+", flags=re.UNICODE)
+    u"\U0001F600-\U0001F64F"  # emoticons
+    u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+    u"\U0001F680-\U0001F6FF"  # transport & map symbols
+    u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+    u"\U00002500-\U00002BEF"  # chinese char
+    u"\U00002702-\U000027B0"
+    u"\U00002702-\U000027B0"
+    u"\U000024C2-\U0001F251"
+    u"\U0001f926-\U0001f937"
+    u"\U00010000-\U0010ffff"
+    u"\u2640-\u2642"
+    u"\u2600-\u2B55"
+    u"\u200d"
+    u"\u23cf"
+    u"\u23e9"
+    u"\u231a"
+    u"\ufe0f"  # dingbats
+    u"\u3030"
+    u"\u2665"
+    "]+", flags=re.UNICODE)
+
+item_removal = ('', '...' )
 
 #-----------convert all txt files to dataframe----------------
 def txt2df():
@@ -78,11 +94,14 @@ def preprocessing(df):
     dfN['no_punc'] = [ [word for word in sentence if word not in string.punctuation] for sentence in dfN['lower']]
     
     #remove emoji
-    dfN['processed'] = [[emoji_pattern.sub(r'', word) for word in sentence] for sentence in dfN['no_punc']]
+    dfN['no_emoji'] = [[emoji_pattern.sub(r'', word) for word in sentence] for sentence in dfN['no_punc']]
+    
+    #remove some specific characters
+    dfN['processed'] = [[word for word in sentence if word not in item_removal] for sentence in dfN['no_emoji']]
     
     return dfN
 
-if __name__ == '__main__':
+def _test():
     df = txt2df()
     print(df.head())
     dfN = preprocessing(df)
@@ -90,3 +109,8 @@ if __name__ == '__main__':
 
     #save to csv
     dfN.to_csv(config.preprocessPath, index=False)
+
+
+if __name__ == '__main__':
+    _test()
+    
