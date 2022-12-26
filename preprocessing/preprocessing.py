@@ -53,11 +53,12 @@ def txt2df():
     return df
 
 # -------------------preprocessing---------------------------
-def preprocessing(df):
+def preprocessing(dfPath):
     """
     Return: a new dataframe contains numerous columns which are some preprocessing methods
             such as: tokenization, spacy tokenization, POS tagging, lowercase
     """
+    df = pd.read_csv(dfPath)
     dfN = df.copy()
 
     #accent marks removal
@@ -102,9 +103,9 @@ def preprocessing(df):
     return dfN
 
 def _test():
-    df = txt2df()
-    print(df.head())
-    dfN = preprocessing(df)
+    # df = txt2df()
+    # print(df.head())
+    dfN = preprocessing(config.csvPath)
     print(dfN.head())
 
     #save to csv

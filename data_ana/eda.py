@@ -12,25 +12,6 @@ from distutils.version import LooseVersion
 from packaging import version
 import seaborn as sns
 from operator import mod 
-
-# LooseVersion(sns.__version__)
-# version.parse(sns.__version__)
-# version.Version(sns.__version__)
-
-# # currently:
-# if LooseVersion(mod.__version__) < LooseVersion(minversion):
-#     pass
-
-# # options:
-# if version.parse(mod.__version__) < version.parse(minversion):
-#     pass
-
-# if version.Version(mod.__version__) < version.Version(minversion):
-#     pass
-
-# if Version(mod.__version__) < Version(minversion):
-#     pass
-
 import os 
 import ast
 import pandas as pd
@@ -75,7 +56,7 @@ class EDA:
         self.dfN['review_len'] = self.dfN['process_str'].astype(str).apply(len)
         return self.dfN
 
-    def vocab(self, num):
+    def vocab(self, num=1000):
         """
         Return: a new dataframe contains  the n most common words
         """
@@ -88,14 +69,19 @@ class EDA:
         print(allwords[:10])
 
         mostcommon = FreqDist(allwords).most_common(num)
-        # x, y = zip(*mostcommon)
 
         #--- count no. char in each word_token
         listVocab = np.unique(allwords)
         word_char_count = [len(word) for word in listVocab]
 
+        #save freq of most common words to csv
+        x, y = zip(*mostcommon)
+        dfCommon = pd.DataFrame({'common words': x, 'freq': y})
+        dfCommon.to_csv(os.path.join(config.edaPath, 'common_words.csv'))
+        
+        #save char count of each word (token) to csv
         dfV = pd.DataFrame({'word': listVocab, 'char_count': word_char_count})
-        dfV.to_csv(os.path.join(config.edaPath, 'vocab.csv'))
+        dfV.to_csv(os.path.join(config.edaPath, 'char_count_token.csv'))
         return allwords, listVocab, word_char_count, mostcommon
 
     def count_vectorizer(self):

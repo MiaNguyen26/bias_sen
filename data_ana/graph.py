@@ -42,7 +42,7 @@ class Graph:
         plt.savefig(os.path.join(config.graphPath, 'heatmap.png'))
 
         
-    def graph_word_common(self, num=25):
+    def graph_word_common(self, num=1000):
         x, y = zip(*self.mostcommon)
 
         plt.figure(figsize=(50,30))
