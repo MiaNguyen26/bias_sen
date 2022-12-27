@@ -1,9 +1,13 @@
 #here is the default config file
 import os
 import datetime
+
+
 now = datetime.datetime.now()
 ttime = '{}{}_{}{}'.format(now.month, now.day, now.hour, now.minute)
 
+#---------------- constant ---------------
+# 26 aspects
 listAspect = ['Dọn dẹp chung', 'An ninh', 'Dịch vụ bổ sung', 
             'Dọn dẹp nhà thầu', 'Dọn dẹp khác', 'Giá tiền khác', 'Giá tiền phòng', 
             'Ăn uống', 'Dọn dẹp phòng', 'Yếu tố khách quan', 'Dịch vụ khách sạn', 
@@ -13,8 +17,11 @@ listAspect = ['Dọn dẹp chung', 'An ninh', 'Dịch vụ bổ sung',
             'Giá tiền dịch vụ', 'Cơ sở vật chất khách sạn', 'Địa điểm', 
             'Nhân viên khác', 'Tốc độ dịch vụ']
 
+#number of common words
+num_common = 100
 
 
+# -----------------Path to load data----------------
 parentPath = '/home/user/Desktop/review'
 
 #path of RAW data file
@@ -28,7 +35,7 @@ csvPath = os.path.join(parentPath,'data', dataName+'.csv')
 
 #path of loading preprocessed data file
 preprocessFile = os.path.join(parentPath, 'results/preprocess',
-                                'preprocess_1216_1534.csv')
+                                'preprocess_1226_1833.csv')
 
 
 
