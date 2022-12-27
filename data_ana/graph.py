@@ -77,15 +77,14 @@ class Graph:
 
 def _test():
 
-    num = int(input("Enter the number of common words: "))
     dfProcess = pd.read_csv(config.processedFile)
     # dfProcess = pd.read_csv(config.processedFile)
     eda= EDA(dfProcess)
-    allwords, listVocab, charVocab, mostcommon = eda.vocab(num)
+    allwords, listVocab, charVocab, mostcommon = eda.vocab(config.num_common)
     
     graph = Graph(dfProcess, mostcommon, allwords, listVocab, charVocab)
     # graph.graph_word_count()
-    graph.graph_word_common(num)
+    graph.graph_word_common(config.num_common)
     graph.graph_vocal()
 
 
