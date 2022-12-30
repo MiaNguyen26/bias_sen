@@ -6,8 +6,10 @@
 
 - Input: 
     Dataframe which includes *text* column. This column is preprocessed later
+    Input Path: csvPath in config - *data/.csv*
+
 - Output:
-A new dataframe which has the same columns as the original df, and added some new columns below:
+    A new dataframe which has the same columns as the original df, and added some new columns below:
     - *token* : using pyvi.tokenization for *** raw *text* *** (I)
         > Gia_đình tôi rất hài_lòng về dịch_vụ của khách_sạn
     - *spacy_token* : using pyvi.spacy_tokenize for *** raw *text* *** (J)
@@ -22,4 +24,14 @@ A new dataframe which has the same columns as the original df, and added some ne
         > ['gia_đình', 'tôi', 'rất', 'hài_lòng', 'về', 'dịch_vụ', 'của', 'khách_sạn']
     - *processed* : the final results after removing some specific characters such as * '', '...' * (O)
         > ['gia_đình', 'tôi', 'rất', 'hài_lòng', 'về', 'dịch_vụ', 'của', 'khách_sạn']
+
+    Saved path: *results/preprocess*
+
+## **Data_loader**
+Load json or txt file to csv. The result will be saved in *csvPath*
+
+## **Data_augmentation**
+
+## **Data_analysis**
+
 

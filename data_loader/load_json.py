@@ -2,6 +2,8 @@ import json
 import numpy as np
 import os
 import pandas as pd
+import xlsxwriter
+from tqdm import tqdm
 
 from configs import config
 
@@ -36,11 +38,88 @@ class json_processing():
         
         return dfN
 
+
+class jsonl_processing():
+    def __init__(self):
+        # self.file = open(config.jsonlFile, 'r')
+        # self.lines = list(self.file)
+        # self.data =[]
+        # for json_str in self.lines:
+        #     data = json.loads(json_str)
+        #     self.data.append(data)
+        self.data = []
+        with open(config.jsonlFile) as f:
+            # f = list(f)
+            for line in f:
+                data = json.loads(line)
+                self.data.append(data)
+        # print(self.data)
+
         
+    def get_list_id(self):
+        idList = []
+        for idx1, content in enumerate(self.data):
+            idList.append(content["id"])
+
+        # print(idList)
+        # workbook = xlsxwriter.Workbook('check_pred_10k.xlsx')
+        # worksheet = workbook.add_worksheet()
+        # worksheet.write_column('A1', idList)
+        # workbook.close()
+
+        return idList
+
+    def compare_gt_pred(self):
+        gt_text =  []
+        pred_text = []
+        # count = 0
+        result = []
+        idList = []
+        for idx1, content in enumerate(tqdm(self.data)):
+
+            #--- into each review
+            idList.append(content["id"])
+
+            #get list of text gt 
+            for idx2, text in enumerate(content["entity_spans"]):
+                gt_text.append(text['text'].lower())
+            
+            #get list of text pred
+            for idx3, text in enumerate(content["entity_spans_pred"]):
+                pred_text.append(text['text'].lower())
+
+            # print('gt==' , gt_text)
+            # print('pred==', pred_text)
+
+            #compare gt vs. pred
+            count = 0
+            sum = len(gt_text)
+            for idx4, gt in enumerate(gt_text):
+                for idx5, pred in enumerate(pred_text):
+                    if gt in pred or pred in gt:
+                        count += 1
+            
+            if count == sum:
+                result.append('True')
+            else:
+                result.append(f'{count}/{sum}')
+            
+        workbook = xlsxwriter.Workbook(os.path.join(config.parentPath, 'results','compare.xlsx'))
+        worksheet = workbook.add_worksheet()
+        worksheet.write_column('A1', idList)
+        worksheet.write_column('B1', result)
+        workbook.close()
+    
+        return result
+            
+
 
 def _test():
-    JSONProcess = json_processing()
-    a = JSONProcess.convert_json2csv()
+    # JSONProcess = json_processing()
+    # a = JSONProcess.convert_json2csv()
+    JSONL = jsonl_processing()
+    a = JSONL.compare_gt_pred()
+    print('ma === ', a.count('True'))
 
 
 

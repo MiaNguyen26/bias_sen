@@ -36,6 +36,8 @@ parentPath = '/home/user/Desktop/review'
 dataName = 'data_1k'
 rawPath = os.path.join(parentPath, 'data/webanno_raw')
 jsonFile = os.path.join(parentPath, 'data', dataName +'.json')
+jsonlFile = os.path.join(parentPath, 'data', 'data_pred_check' +'.jsonl')
+# jsonlFile = os.path.join(parentPath, 'data', 'test' +'.jsonl')
 
 #path to save data.csv file
 csvPath = os.path.join(parentPath,'data', dataName+'.csv')
