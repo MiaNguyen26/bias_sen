@@ -29,6 +29,7 @@ listEAspect = ['GENERAL', 'PRICE_GENERAL', 'PRICE_ROOM', 'PRICE_OTHER', 'PRICE_S
                 'ACCOMODATION_UTILITIES', 'OTHER_OBJECTIVE']
 
 
+word_common = ['common_word', 'frequency', 'percentage', 'char_count']
 
 # -----------------Path to load data----------------
 parentPath = '/home/user/Desktop/review'
@@ -65,14 +66,11 @@ preprocessPath = os.path.join(parentPath, 'results/preprocess', preprocessName)
 #path to save graph
 graphFolder = os.path.join(parentPath, 'results/graph')
 graphPath = os.path.join(graphFolder, ttime)
-if not os.path.exists(graphPath):
-    os.makedirs(graphPath)
+
 
 #path to save eda result
 edaFolder = os.path.join(parentPath, 'results/eda')
 edaPath = os.path.join(edaFolder, ttime)
-if not os.path.exists(edaPath):
-    os.makedirs(edaPath)
 
 #path of vocab file
 vocabFile = os.path.join(parentPath, 'results/eda/1216_1545', 'vocab.csv')
@@ -82,7 +80,6 @@ processedFile = os.path.join(parentPath, 'results/eda/1216_1545', 'processed.csv
 #path to save data augmentation result
 augmentFolder = os.path.join(parentPath, 'results/augmentation')
 augmentPath = os.path.join(augmentFolder, ttime)
-if not os.path.exists(augmentPath):
-    os.makedirs(augmentPath)
+
 
 

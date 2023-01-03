@@ -5,6 +5,9 @@ import os
 
 from configs import config
 
+if not os.path.exists(config.augmentPath):
+    os.makedirs(config.augmentPath)
+
 class Augment_Contrast():
     def __init__(self):
         self.positive = config.positiveFile

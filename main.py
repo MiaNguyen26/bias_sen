@@ -10,6 +10,6 @@ if __name__ == '__main__':
 
     # eda._test()
     # graph._test()
-    # word_bias._test()
-    load_json._test()
+    word_bias._test()
+    # load_json._test()
     # augment_contrast._test()

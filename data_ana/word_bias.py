@@ -26,11 +26,14 @@ class WordBIAS():
 
     def get_common_each_aspect(self):
         """
-        Return: a df contains the n most common words in each aspect
-                which has 26*n rows and 4 columns: aspect, common_word, freq, char_count
+        Return: a df contains the n most common, freq and percentage words in each aspect
+                which has n rows and 26 columns, each column is a aspect
 
         """
         dfSumCommon = pd.DataFrame()
+        all_aspects = []
+        listDf = []
+        dataDict = {}
 
         for aspect in config.listAspect:
             dfAspect = self.df.loc[self.df['aspect'] == aspect]
@@ -40,20 +43,30 @@ class WordBIAS():
                 wordList = ast.literal_eval(wordlist)
                 wordList = [word for word in wordList  if re.match(r'^-?\d+(?:\.\d+)$', word) is None and word.isdigit() == False]
 
+                #all words in an aspect
                 allwords += wordList
 
-    
+            #number of words in an aspect
+            freq_words = len(allwords)
+            # get n most common words
             mostcommon = FreqDist(allwords).most_common(config.num_common)
 
             x, y = zip(*mostcommon)
             # count no. char in each common word
             word_char_count = [len(word) for word in x]
+            #get percentage of each word
+            percent = [round((freq/freq_words)*100, 4) for freq in y]
 
-            listAspect = [aspect] * len(x)
+            aspectName = [aspect]
+            aspect_space = [' '] * (len(config.word_common)-1)
+            aspectName.extend(aspect_space)
 
-            dfCommon = pd.DataFrame({'aspect': listAspect, 'common_words': x, 'freq': y, 'char_count': word_char_count})
+            dfCommon = pd.DataFrame({'common_words': x, 'freq': y, 'percent': percent, 'char_count': word_char_count})
+            dfCommon.columns = pd.MultiIndex.from_tuples(zip(aspectName, dfCommon.columns))
+            listDf.append(dfCommon)
 
-            dfSumCommon = pd.concat([dfSumCommon, dfCommon], axis=0)
+
+        dfSumCommon = pd.concat(listDf, axis=1)
         
         dfSumCommon.to_csv(os.path.join(config.edaPath, 'common_words_each_aspect.csv'), index=False)
 

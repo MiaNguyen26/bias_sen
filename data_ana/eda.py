@@ -32,6 +32,10 @@ import matplotlib.pyplot as plt
 
 from configs import config
 
+if not os.path.exists(config.edaPath):
+    os.makedirs(config.edaPath)
+
+
 class EDA:
     def __init__(self, df):
         self.df = df

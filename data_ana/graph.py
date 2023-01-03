@@ -20,6 +20,9 @@ from configs import config
 # from ..configs import config
 from .eda import EDA
 
+if not os.path.exists(config.graphPath):
+    os.makedirs(config.graphPath)
+
 class Graph:
     def __init__(self, dfProcess, mostcommon, allwords, listVocab, charCount):
         self.dfProcess = dfProcess
