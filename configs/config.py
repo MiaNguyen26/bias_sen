@@ -32,21 +32,24 @@ listEAspect = ['GENERAL', 'PRICE_GENERAL', 'PRICE_ROOM', 'PRICE_OTHER', 'PRICE_S
 word_common = ['common_word', 'frequency', 'percentage', 'char_count']
 
 # -----------------Path to load data----------------
+
 parentPath = '/home/user/Desktop/review'
+
+#path of stopword file
+stopwordFile = os.path.join(parentPath, 'data/stopwords.txt')
+#common words file
+commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect.csv')
+#word_bias file
+wordbiasFile = os.path.join(parentPath, 'data', 'word_bias1.csv')
+
 #path of RAW data file
-dataName = 'data_1k'
-rawPath = os.path.join(parentPath, 'data/webanno_raw')
-jsonFile = os.path.join(parentPath, 'data', dataName +'.json')
-jsonlFile = os.path.join(parentPath, 'data', 'data_pred_check' +'.jsonl')
-# jsonlFile = os.path.join(parentPath, 'data', 'test' +'.jsonl')
-
-#path to save data.csv file
-csvPath = os.path.join(parentPath,'data', dataName+'.csv')
-
+rawPath = os.path.join(parentPath, 'data/uat_results (10).csv')
+#path of csv (after converted path)
+csvPath = os.path.join(parentPath, 'data', 'uat_ver1.csv')
 
 #path of loading preprocessed data file
 preprocessFile = os.path.join(parentPath, 'results/preprocess',
-                                'preprocess_1226_1833.csv')
+                                'preprocess_112_1823.csv')
 
 #path for Data Augmentation
 positiveFile = os.path.join(parentPath,'data/augmentation' , 'positive.txt')

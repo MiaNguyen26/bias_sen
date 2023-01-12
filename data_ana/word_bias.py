@@ -7,7 +7,7 @@
         
 
 """
-# import eda
+import data_ana.eda as eda
 from configs import config
 
 import numpy as np
@@ -15,7 +15,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import re 
-
+import pyvi
+from pyvi import ViTokenizer
 from nltk.probability import FreqDist
 import ast
 
@@ -24,6 +25,131 @@ class WordBIAS():
     def __init__(self, df):
         self.df = df
 
+
+        
+    def get_bias(self):
+
+        """
+        Return: a df contains those columns: bias, word_count,
+                and aspects with each cell is the percentage of word in that aspect
+        """
+
+        # -----------------get bias-----------------------
+        header = ['word_bias', 'char_count'] + config.listAspect
+        dfBias = pd.DataFrame(columns=header)
+
+        dfCommon = pd.read_csv(config.wordbiasFile, header=[0,1])
+        biasSet = set()
+
+        for idx, this_aspect in enumerate(config.listAspect):
+            # next_idx = (idx+1)%len(config.listAspect)
+            # next_aspect = config.listAspect[(idx+1)%len(config.listAspect)]
+            idxList = np.arange(idx+1, len(config.listAspect)).tolist()
+           
+            #get this(aspect) word value
+            wordList = dfCommon[(this_aspect, 'common_words')].copy()
+            wordList.dropna(how='all', inplace=True)
+            wordList = wordList.tolist()
+
+            #loop over aspects after this aspect                
+            for idx1 in idxList:
+                aspect1 = config.listAspect[idx1]
+
+                #get aspect common_word
+                wordList1 = dfCommon[(aspect1, 'common_words')].copy()
+                wordList1.dropna(how='all', inplace=True)
+                wordList1 = wordList1.tolist()
+
+                #compare two list common words
+                word_bias = list(set(wordList).intersection(wordList1))
+                print(f'list word bias{word_bias}')
+
+                #check bias is empty or not
+                if not word_bias:
+                    print('no bias')
+                    continue
+                else:
+                    for bias in word_bias:
+                        
+                        a1 = dfCommon.loc[dfCommon[(aspect1, 'common_words')] == bias]
+                        a1 = a1[(aspect1)]
+                        bias_percent1 = a1['percent (%)'].iloc[0]
+
+                        #check if bias existed or not
+                        if bias in biasSet:
+                            print(f'This is existed bias = {bias}')
+                            print(f'that aspect1 = {aspect1}')
+                            #add percent to corresponding aspect column
+                            row_idx = dfBias.index[dfBias['word_bias'] == bias].tolist()[0]
+                            dfBias.at[row_idx, aspect1] = bias_percent1
+            
+                        else:
+                            print(f'This is new bias = {bias}')
+                            print(f'this aspect = {this_aspect}, that aspect = {aspect1}')
+                            #get bias char count and perccentage in this aspect
+                            a0 = dfCommon.loc[dfCommon[(this_aspect, 'common_words')] == bias]
+                            a0 = a0[(this_aspect)]
+                            bias_char_count = a0['char_count'].iloc[0]
+                            bias_percent0 = a0['percent (%)'].iloc[0]
+
+                            new_row = [{'word_bias': bias, 'char_count': bias_char_count,this_aspect: bias_percent0, aspect1: bias_percent1}]
+                            dfB = pd.DataFrame(new_row)
+                            dfBias = pd.concat([dfB, dfBias]).reset_index(drop=True)
+                            # dfBias.reset_index(drop=True, inplace=True)
+
+                        dfBias.reset_index(drop=True, inplace=True)
+
+                    biasSet.update(word_bias)
+                    
+
+            dfBias.reset_index(drop=True, inplace=True)
+            dfBias.to_csv(os.path.join(config.edaPath, 'word_bias.csv'), index=False)
+
+
+      
+    def preprocess_word_common(self):
+        #------ remove stopwords and get words have freq >=10----------------
+        with open(config.stopwordFile, 'r') as f:
+            stopwords = [line.strip() for line in f]
+            stopwords_token = [ViTokenizer.tokenize(word) for word in stopwords]
+            # print(stopwords_token)
+        # print(stopwords_token)
+        # exit()
+
+        df = pd.read_csv(config.commonFile, header=[0,1])
+        dfFinal = pd.DataFrame()
+        listDF = []
+        a = df.columns.to_flat_index()
+        a = list(a)
+        print(len(a))
+        print(a)
+        print(type(df.columns))
+        exit()
+        
+        for aspect in config.listAspect:
+
+            #aspect List
+            aspectList = [aspect]*4
+
+            dfN = df[[(aspect, 'common_words'), (aspect, 'freq'), (aspect, 'percent (%)'), (aspect, 'char_count')]]
+            dfN.columns = dfN.columns.droplevel(0)
+            dfN1 = dfN.loc[(dfN['freq'] >= 10) & (~dfN['common_words'].isin(stopwords_token))].copy()
+
+            header = [aspectList, ['common_words', 'freq', 'percent (%)', 'char_count']]
+            dfN1.columns = header
+
+            #replace nan/ empty cell
+            dfN1.replace('', np.nan, inplace=True)
+            dfN1.dropna(how='all', inplace=True)
+            dfN1.reset_index(drop=True, inplace=True)
+            listDF.append(dfN1)
+        
+            
+        dfFinal = pd.concat(listDF, axis=1)
+        dfFinal.to_csv(os.path.join(config.edaPath, 'word_bias1.csv'), index=False)
+
+    
+
     def get_common_each_aspect(self):
         """
         Return: a df contains the n most common, freq and percentage words in each aspect
@@ -31,23 +157,27 @@ class WordBIAS():
 
         """
         dfSumCommon = pd.DataFrame()
-        all_aspects = []
         listDf = []
-        dataDict = {}
+        propertyList = ['common_words', 'freq', 'percent', 'char_count']
+        header = []
 
         for aspect in config.listAspect:
-            dfAspect = self.df.loc[self.df['aspect'] == aspect]
-            words = dfAspect['processed']
+
+            dfAspect = self.df.loc[self.df['aspect'] == aspect].copy()
+            words = dfAspect['processed'].copy()
             allwords = []
             for wordlist in words:
                 wordList = ast.literal_eval(wordlist)
-                wordList = [word for word in wordList  if re.match(r'^-?\d+(?:\.\d+)$', word) is None and word.isdigit() == False]
 
+                wordList = [word for word in wordList  if re.match(r'^-?\d+(?:\.\d+)$', word) is None and word.isdigit() == False]
                 #all words in an aspect
                 allwords += wordList
 
             #number of words in an aspect
             freq_words = len(allwords)
+            if not allwords:
+                continue
+
             # get n most common words
             mostcommon = FreqDist(allwords).most_common(config.num_common)
 
@@ -55,14 +185,20 @@ class WordBIAS():
             # count no. char in each common word
             word_char_count = [len(word) for word in x]
             #get percentage of each word
-            percent = [round((freq/freq_words)*100, 4) for freq in y]
+            percent = [round((freq/freq_words), 4) for freq in y]
 
+            #get aspect for header
             aspectName = [aspect]
             aspect_space = [' '] * (len(config.word_common)-1)
             aspectName.extend(aspect_space)
+            aspectList = [aspect]*4
 
+            #get dataframe for each aspect
             dfCommon = pd.DataFrame({'common_words': x, 'freq': y, 'percent': percent, 'char_count': word_char_count})
-            dfCommon.columns = pd.MultiIndex.from_tuples(zip(aspectName, dfCommon.columns))
+            # dfCommon.columns = pd.MultiIndex.from_tuples(zip(aspectName, dfCommon.columns))
+            # print(list(dfCommon.columns))
+            a = [aspectList, list(dfCommon.columns)]
+            dfCommon.columns = a
             listDf.append(dfCommon)
 
 
@@ -74,10 +210,11 @@ class WordBIAS():
 
 def  _test():
     df = pd.read_csv(config.preprocessFile)
-    a =WordBIAS(df)
-    common = a.get_common_each_aspect()
+    a = WordBIAS(df)
+    # common = a.get_common_each_aspect()
+    process = a.preprocess_word_common()
+    # bias = a.get_bias()
 
-    return common
 
 if __name__ == '__main__':
     a = _test()
