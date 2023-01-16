@@ -1,4 +1,5 @@
-from data_ana import  word_bias #,graph, eda
+# from data_ana import  word_bias
+from data_ana import  graph
 # from preprocessing import preprocessing
 
 # from data_loader import convert2csv
@@ -14,7 +15,7 @@ if __name__ == '__main__':
     # preprocessing._test()
 
     # eda._test()
-    # graph._test()
-    word_bias._test()
+    graph._test()
+    # word_bias._test()
     # load_json._test()
 

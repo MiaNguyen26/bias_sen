@@ -2,15 +2,18 @@
 import os
 import datetime
 
-from click import option
+# from click import option
 
 
 now = datetime.datetime.now()
 ttime = '{}{}_{}{}'.format(now.month, now.day, now.hour, now.minute)
 
+
 #---------------- constant ---------------
 num_common = 100
 num_sample = 300
+freq_threshold = 10
+dataName = 'uat8_9_10'
 # 26 aspects
 listAspect = ['Dọn dẹp chung', 'An ninh', 'Dịch vụ bổ sung', 
             'Dọn dẹp nhà thầu', 'Dọn dẹp khác', 'Giá tiền khác', 'Giá tiền phòng', 
@@ -31,31 +34,36 @@ listEAspect = ['GENERAL', 'PRICE_GENERAL', 'PRICE_ROOM', 'PRICE_OTHER', 'PRICE_S
 
 word_common = ['common_word', 'frequency', 'percentage', 'char_count']
 
+
 # -----------------Path to load data----------------
 
 parentPath = '/home/user/Desktop/review'
 
+#path for processed file
+#common words file
+commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect', dataName,'.csv')
+#word_bias file
+wordbiasFile = os.path.join(parentPath, 'data', 'word_bias_preprocess', dataName, '.csv')
+#word_bias file
+biasFile = os.path.join(parentPath, 'data', 'word_bias'+'_'+ dataName+'.csv')
+
 #path of stopword file
 stopwordFile = os.path.join(parentPath, 'data/stopwords.txt')
-#common words file
-commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect.csv')
-#word_bias file
-wordbiasFile = os.path.join(parentPath, 'data', 'word_bias1.csv')
 
 #path of RAW data file
 rawPath = os.path.join(parentPath, 'data/uat_results (10).csv')
 #path of csv (after converted path)
-csvPath = os.path.join(parentPath, 'data', 'uat_ver1.csv')
+csvPath = os.path.join(parentPath, 'data/raw_data', 'uat_ver1.csv')
 
 #path of loading preprocessed data file
 preprocessFile = os.path.join(parentPath, 'results/preprocess',
-                                'preprocess_112_1823.csv')
+                                    'preprocess_113_1045.csv')
+                                # 'preprocess_112_1823.csv')
 
 #path for Data Augmentation
 positiveFile = os.path.join(parentPath,'data/augmentation' , 'positive.txt')
 negativeFile = os.path.join(parentPath,'data/augmentation' , 'negative.txt')
 linkingFile = os.path.join(parentPath,'data/augmentation' , 'linking.txt')
-
 
 
 
@@ -68,12 +76,12 @@ preprocessPath = os.path.join(parentPath, 'results/preprocess', preprocessName)
 
 #path to save graph
 graphFolder = os.path.join(parentPath, 'results/graph')
-graphPath = os.path.join(graphFolder, ttime)
+graphPath = os.path.join(graphFolder, ttime+ '_'+ dataName)
 
 
 #path to save eda result
 edaFolder = os.path.join(parentPath, 'results/eda')
-edaPath = os.path.join(edaFolder, ttime)
+edaPath = os.path.join(edaFolder, ttime+'_'+dataName)
 
 #path of vocab file
 vocabFile = os.path.join(parentPath, 'results/eda/1216_1545', 'vocab.csv')

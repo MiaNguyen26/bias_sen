@@ -30,9 +30,12 @@ emoji_pattern = re.compile("["
     u"\ufe0f"  # dingbats
     u"\u3030"
     u"\u2665"
+    u"\u055A - \u070D"
+    u"\u2019"
+
     "]+", flags=re.UNICODE)
 
-item_removal = ('', '...' )
+item_removal = ('', '...', '\n' )
 
 #-----------convert all txt files to dataframe----------------
 def txt2df():

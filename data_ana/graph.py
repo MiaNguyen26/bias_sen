@@ -1,96 +1,95 @@
-# -*- coding: utf-8 -*-
-"""
-This module contains the Graph class, which is used to represent a graph.
-# It contains the following graph:
-Sentiment Analysis, Word Count, Word Common
-
-"""
-
-
-import os, sys
-
-import matplotlib.pyplot as plt
-import seaborn as sns
+import os
 import pandas as pd
 import numpy as np
-# from sklearn.feature_extraction.text import CountVectorizer
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# from data_ana import eda
 from configs import config
-# from ..configs import config
-from .eda import EDA
 
 if not os.path.exists(config.graphPath):
     os.makedirs(config.graphPath)
 
 class Graph:
-    def __init__(self, dfProcess, mostcommon, allwords, listVocab, charCount):
-        self.dfProcess = dfProcess
-        self.mostcommon = mostcommon
-        self.allwords = allwords
-        self.listVocab = listVocab
-        self.charCount = charCount
-    
-    def graph_word_count(self):
-        #correlation heatmap for word count and review length
-        correlation = self.dfProcess[['word_count',  'review_len']].corr()
-        mask = np.zeros_like(correlation, dtype=np.bool)
-        mask[np.triu_indices_from(mask)] = True
-        plt.figure(figsize=(50,30))
-        plt.xticks(fontsize=40)
-        plt.yticks(fontsize=40)
-        sns.heatmap(correlation, cmap='coolwarm', annot=True, annot_kws={"size": 40},
-                    linewidths=10, vmin=-1.5, mask=mask)
-        plt.title('Correlation Heatmap', fontsize=60)
-        plt.savefig(os.path.join(config.graphPath, 'heatmap.png'))
+    def __init__(self):
+        pass
+
+    def common_aspect_bar(self):
+        """
+        Return:  a bar of the most common words in each aspect
+        """
+        #get list aspects in dataframe
+        df = pd.read_csv(config.biasFile)
+        aspectList = df.columns.tolist()
+        aspectList.remove('word_bias')
+        aspectList.remove('char_count')
+
+        # fig, axs = plt.subplots(9, 3, figsize=(40*9,25*3))
+        figure = plt.figure(figsize=(50,30))
+
+        #loop over aspects
+        for idx, this_aspect in enumerate(aspectList):
+            dfData = df[['word_bias',this_aspect]]
+            #find row
+            # row = idx//5
+            # axs[row, idx].barh(dfData['word_bias'].tolist(), dfData[this_aspect].tolist(), color='blue')
+
+            plt.bar(dfData['word_bias'].tolist(), dfData[this_aspect].tolist(), color='blue')
+            plt.title(this_aspect, fontsize=50, color='g')
+            plt.xticks(rotation=90, fontsize=16)
+            plt.yticks(fontsize=40)
+            plt.xlabel('Word', labelpad=100, fontsize=40)
+            plt.ylabel('Percent', labelpad=100, fontsize=40)
+            plt.grid(axis='y', linestyle='--')
+            # plt.show()
+            this_aspect = this_aspect.replace('/',' ')
+            plt.savefig(os.path.join(config.graphPath, this_aspect + '.png'))
+
+
+    def hist_word_count(self):
+        """
+        Return: histogram of common char count
+        """
+        #get list aspects in dataframe
+        df = pd.read_csv(config.biasFile)
+        word_count = df['char_count'].tolist()
+
+        plt.figure(figsize=(30,30))
+        plt.hist(word_count)
+
+        plt.grid(axis='y', linestyle='--')
+        plt.xlabel('char_count', fontsize=40, labelpad=100)
+        plt.ylabel('Frequency', fontsize=40, labelpad=100)
+        plt.xticks(fontsize=30)
+        plt.yticks(fontsize=30)
+        plt.title('Histogram of char_count', fontsize=50)
+        plt.savefig(os.path.join(config.graphPath, 'char_count' + '.png'))
+
+    def corr_aspect(self):
+        """
+        Return : a correlation matrix of all aspects 
+        """
+        df = pd.read_csv(config.biasFile)
+        aspectList = df.columns.tolist()
+        aspectList.remove('char_count')
+
+        dfC = df[aspectList].copy()
+        corr_matrix = dfC.corr()
+        plt.figure(figsize=(50,40))
+        corr = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+        # fig = corr.get_figure()
+        plt.xticks(fontsize=30)
+        plt.yticks(fontsize=30)
+        corr.figure.savefig(os.path.join(config.graphPath, 'correlation_common_aspect' + '.png'))
+
 
         
-    def graph_word_common(self, num=1000):
-        x, y = zip(*self.mostcommon)
-
-        plt.figure(figsize=(50,30))
-        plt.margins(0.02)
-        plt.bar(x,y)
-        plt.xlabel('Words', fontsize=50)
-        plt.ylabel('Frequency of Words', fontsize=50)
-        plt.yticks(fontsize=40)
-        plt.xticks(rotation=60, fontsize=40)
-        plt.title('Frequency of {} Words'.format(num), fontsize=60)
-        plt.savefig(os.path.join(config.graphPath, 'wordcommon.png'))
-
-    def graph_vocal(self):
-        bin = 60
-        fig = plt.figure(figsize=(50,30))
-        plt.hist(self.charCount, bins=bin)
-        plt.xlabel('Words', fontsize=50, labelpad=100)
-        plt.ylabel('Frequency', fontsize=50, labelpad=100)
-        plt.yticks(fontsize=40)
-        plt.xticks(fontsize=40)
-        plt.xlim([1,30])
-        #remove the first tick in x axis
-
-        # xticks = ax.xaxis.get_major_ticks()
-        # xticks[0].label1.set_visible(False)
-
-        plt.title('Frequency of \'the number of characters in each vocab\' with bin = {}'.format(bin), fontsize=60)
-        plt.savefig(os.path.join(config.graphPath, 'vocal.png'))
-
-
-
 
 def _test():
-
-    dfProcess = pd.read_csv(config.processedFile)
-    # dfProcess = pd.read_csv(config.processedFile)
-    eda= EDA(dfProcess)
-    allwords, listVocab, charVocab, mostcommon = eda.vocab(config.num_common)
-    
-    graph = Graph(dfProcess, mostcommon, allwords, listVocab, charVocab)
-    # graph.graph_word_count()
-    graph.graph_word_common(config.num_common)
-    graph.graph_vocal()
+    g = Graph()
+    # g.common_aspect_bar()
+    # g.hist_word_count()
+    g.corr_aspect()
 
 
 if __name__ == '__main__':
     _test()
-    
