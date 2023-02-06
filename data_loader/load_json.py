@@ -33,8 +33,12 @@ class json_processing():
         cols = cols[-2:]  + cols[:-2]
         dfN = df[cols]
 
+        #output file
+        csvFile = str(input("Enter the name of csv file: "))
+        csvPath = os.path.join(config.parentPath,'data/raw_data', csvFile+'.csv')
+
         #save df to csv
-        dfN.to_csv(config.csvPath, index=False)
+        dfN.to_csv(csvPath, index=False)
         
         return dfN
 
@@ -115,11 +119,12 @@ class jsonl_processing():
 
 
 def _test():
-    # JSONProcess = json_processing()
-    # a = JSONProcess.convert_json2csv()
-    JSONL = jsonl_processing()
-    a = JSONL.compare_gt_pred()
-    print('ma === ', a.count('True'))
+    JSONProcess = json_processing()
+    a = JSONProcess.json2csv()
+
+    # JSONL = jsonl_processing()
+    # a = JSONL.compare_gt_pred()
+    # print('ma === ', a.count('True'))
 
 
 

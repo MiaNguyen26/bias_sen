@@ -17,6 +17,8 @@ import os
 import re 
 import pyvi
 from pyvi import ViTokenizer
+import nltk
+from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 from tqdm import tqdm
 import ast
@@ -110,16 +112,26 @@ class WordBIAS():
 
             dfBias.reset_index(drop=True, inplace=True)
             dfBias.fillna(0, inplace=True)
-            dfBias.to_csv(os.path.join(config.edaPath, 'word_bias.csv'), index=False)
-
+            # dfBias.to_csv(os.path.join(config.edaPath, 'word_bias.csv'), index=False)
+            dfBias.to_csv(config.biasFile, index=False)
 
       
     def preprocess_word_common(self):
         #------ remove stopwords and get words have freq >=10----------------
+        #list stopwords
         with open(config.stopwordFile, 'r') as f:
-            stopwords = [line.strip() for line in f]
-            stopwords_token = [ViTokenizer.tokenize(word) for word in stopwords]
+            stopwords_vi = [line.strip() for line in f]
+            stopwords_token = [ViTokenizer.tokenize(word) for word in stopwords_vi]
+        
+        stopwords_en = stopwords.words('english')
+        stopwords_german = stopwords.words('german')
+        stopwords_french = stopwords.words('french')
 
+        stopwords_token.extend(stopwords_en)
+        stopwords_token.extend(stopwords_german)
+        stopwords_token.extend(stopwords_french)
+
+        #read common word file
         df = pd.read_csv(config.commonFile, header=[0,1])
         dfFinal = pd.DataFrame()
         listDF = []
@@ -152,8 +164,8 @@ class WordBIAS():
         
             
         dfFinal = pd.concat(listDF, axis=1)
-        dfFinal.to_csv(os.path.join(config.edaPath, 'word_bias_preprocess.csv'), index=False)
-
+        # dfFinal.to_csv(os.path.join(config.edaPath, 'word_bias_preprocess.csv'), index=False)
+        dfFinal.to_csv(config.wordbiasFile, index=False)
     
 
     def get_common_each_aspect(self):

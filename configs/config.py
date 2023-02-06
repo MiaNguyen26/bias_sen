@@ -39,21 +39,23 @@ word_common = ['common_word', 'frequency', 'percentage', 'char_count']
 
 parentPath = '/home/user/Desktop/review'
 
-#path for processed file
+#-----path for processed file
 #common words file
-commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect', dataName,'.csv')
+commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect_'+ dataName+'.csv')
+#word_bias preprocessed file
+wordbiasFile = os.path.join(parentPath, 'data', 'word_bias_preprocess_'+ dataName+ '.csv')
 #word_bias file
-wordbiasFile = os.path.join(parentPath, 'data', 'word_bias_preprocess', dataName, '.csv')
-#word_bias file
-biasFile = os.path.join(parentPath, 'data', 'word_bias'+'_'+ dataName+'.csv')
+biasFile = os.path.join(parentPath, 'data', 'word_bias_'+ dataName+'.csv')
+#scrapped data file to create dictionary
+scrapFile = os.path.join(parentPath, 'data', 'crawl_data', 'tripadvisor.json')
 
-#path of stopword file
+#-----path of stopword file
 stopwordFile = os.path.join(parentPath, 'data/stopwords.txt')
 
-#path of RAW data file
+#-----path of RAW data file
 rawPath = os.path.join(parentPath, 'data/uat_results (10).csv')
 #path of csv (after converted path)
-csvPath = os.path.join(parentPath, 'data/raw_data', 'uat_ver1.csv')
+csvPath = os.path.join(parentPath, 'data/raw_data', 'dict.csv')
 
 #path of loading preprocessed data file
 preprocessFile = os.path.join(parentPath, 'results/preprocess',
