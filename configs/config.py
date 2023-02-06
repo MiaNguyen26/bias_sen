@@ -94,5 +94,9 @@ processedFile = os.path.join(parentPath, 'results/eda/1216_1545', 'processed.csv
 augmentFolder = os.path.join(parentPath, 'results/augmentation')
 augmentPath = os.path.join(augmentFolder, ttime)
 
+#path to save generate bias and common words samples
+biasSample = os.path.join(parentPath, 'data', 'sample_bias_'+dataName+ '.csv')
+commonSample = os.path.join(parentPath, 'data', 'sample_common_'+dataName+ '.csv')
+
 
 
