@@ -20,8 +20,8 @@ parser = argparse.ArgumentParser(description = 'Convert data to csv format')
 # 2. JSON_GT : json file with ground truth
 # 3. JSONL_MODEL : jsonl file with model prediction and ground truth
 # 4. UAT (uat_results) : csv file with user annotation and ground truth
-parser.add_argument('--dataName', type = str, default = 'uat8')
-parser.add_argument('--dataType', type = str, default = 'UAT',
+parser.add_argument('--dataName', type = str, default = 'bias_predict')
+parser.add_argument('--dataType', type = str, default = 'JSONL_MODEL',
                     choices=['RAW_TEXT', 'JSON_GT', 'JSONL_MODEL', 'UAT'],
                      help = 'data name')
 
@@ -83,7 +83,6 @@ class Convert2CSV():
 
     def jsonl2csv(self):
         """
-        ----------- not done yet -----------
         Input: jsonl file contains text, id, ground truth aspects, model prediction aspects, etc.
         Return: a dataframe contains 4 columns: id, text, expected_aspect, predicted_aspect
                 Duplicating text (to new row) in case a text has multiple aspects.
@@ -91,9 +90,25 @@ class Convert2CSV():
         dataList = []
         with open(self.dataPath) as f:
             for line in f:
+                #get all data as a list of dictionaries
                 data = json.loads(line)
                 dataList.append(data)
-        
+
+        dfJSONL = pd.DataFrame(columns=['id', 'text', 'aspect'])
+        #extract each dictionary in the list
+        for data in dataList:
+            #get id, text, aspect
+            id = data['id']
+            text = data['text']
+            aspects = [data['aspects'].keys()]
+            #create sub df to concat to main df
+            for aspect in aspects:
+                df = pd.DataFrame({'id': id, 'text': text, 'aspect': aspect})
+                dfJSONL = pd.concat([dfJSONL, df], ignore_index=True)
+
+        #save df to csv
+        dfJSONL.reset_index(drop=True, inplace=True)
+        dfJSONL.to_csv(self.save_path, index=False)     
         return dataList
 
     def uat2csv(self):
