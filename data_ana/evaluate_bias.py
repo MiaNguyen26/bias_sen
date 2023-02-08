@@ -1,6 +1,7 @@
 """
         Date Created: 2023-02-03
         Date Modified: 2023-02-03
+        Author: Mia Nguyen
         Description: -Creat custom dictionary from scarping data 
                         output: txt file
                     - Generate non-sense samples from custom dictionary
@@ -21,6 +22,7 @@ from tqdm import tqdm
 import random
 from collections import Counter
 from pyvi import ViTokenizer
+import matplotlib.pyplot as plt
 
 from configs import config
 
@@ -30,7 +32,7 @@ from configs import config
                         # yỳỷỹýỵz]+')
 
 
-class customDictionary():
+class CustomDictionary():
     """
     Description: Create custom dictionary from craping data and save to txt file
     """
@@ -73,7 +75,7 @@ class customDictionary():
         f.close()
 
 
-class generateSample():
+class GenerateSample():
 
     """
     Description: Generate 100 samples for each bias
@@ -297,7 +299,7 @@ class Predict():
 
 
 
-class evaluate():
+class Evaluate():
     """
     Description: Evaluate the model, get Precision and Recall
     """
@@ -321,19 +323,39 @@ class evaluate():
                 dataList1.append(data)
         f1.close()
 
+        dfBias = pd.DataFrame(columns=['proposed_bias', 'precision'])
+        #dictBias with key is bias name, value is a list of [TP (actual bias), FP]
+        dictBias = {}
+
         #extract each dictionary in the list
         for data in dataList1:
             #get id, text, aspect
-            id = data['id']
-            text = data['text']
+            id1 = data['id']
+            # text = data['text']
             aspects = list(data['aspects'].keys())
             # print(aspects)
 
-            #get actual bias and false positive (bias)
+            #get name of this bias
+            this_bias = id1.split('_')[0]
+            #check if this bias in the dictBias
+            if this_bias not in dictBias:
+                dictBias[this_bias] = [0, 0]
+
             if aspects == ['OTHER']:
+                dictBias[this_bias][1] += 1
                 count_FP += 1
             else:
+                dictBias[this_bias][0] += 1
                 count_actual += 1
+
+        #calculate precision and recall for each bias
+        for bias in dictBias:
+            precision = dictBias[bias][0] / (dictBias[bias][0] + dictBias[bias][1])
+            df_thisBias = pd.DataFrame([{'proposed_bias': bias, 'precision': precision}])
+            dfBias = pd.concat([dfBias, df_thisBias], ignore_index=True)
+        
+        dfBias.reset_index(drop=True, inplace=True)
+        dfBias.to_csv(os.path.join(config.parentPath, 'data', 'precision_bias'+ '.csv'), index=False)
         
         dataList2 = []
         #get all actual bias from common list
@@ -361,22 +383,45 @@ class evaluate():
 
         return precision, recall
 
+class Graph_bias():
+    def __init__(self):
+        self.biasPrecisionPath = os.path.join(config.parentPath, 'data', 'precision_bias'+ '.csv')
+
+    def graph_precision(self):
+        df = pd.read_csv(self.biasPrecisionPath)
+        df = df.sort_values(by=['precision'], ascending=False)
+
+        figure = plt.figure(figsize=(50,30))
+        plt.bar(df['proposed_bias'].tolist(), df['precision'].tolist(), color='blue')
+        plt.title('Precision of each proposed bias', fontsize=50, color='g')
+        plt.xticks(rotation=90, fontsize=16)
+        plt.yticks(fontsize=40)
+        plt.xlabel('Proposed Bias', labelpad=100, fontsize=40)
+        plt.ylabel('Precision', labelpad=100, fontsize=40)
+        plt.grid(axis='y', linestyle='--')
+        plt.savefig(os.path.join(config.parentPath,'data', 'precision_bias.png'))
+
+
 
 def _test():
-    # vocab = customDictionary()
+    # vocab = CustomDictionary()
     # vocab.create_dictionary_freq()
 
-    sample = generateSample()
+    # sample = GenerateSample()
     # aa = sample.generate_sample_bias()
-    a = sample.generate_sample_common()
+    # a = sample.generate_sample_common()
 
     # predict = Predict()
     # predict.requests_json_common()
     # predict.json2csv(config.biasPredict)
 
-    # eva = evaluate()
+    # eva = Evaluate()
     # precision, recall = eva.metrics()
     # print(precision, recall)
+
+    graph = Graph_bias()
+    graph.graph_precision()
+
 
 
 if __name__ == '__main__':

@@ -1,25 +1,21 @@
-# from data_ana import  word_bias
-# from data_ana import  graph
-# from data_ana import evaluate_bias
-# from preprocessing import preprocessing
+import argparse
+# from data_loader import convert2csv
+from data_ana import evaluate_bias
 
-# from data_loader import load_json
-# from data_loader import csv2json
-# from data_augment import augment_contrast 
+parser = argparse.ArgumentParser(description = 'Convert data to csv format')
+# 4 types of dataset : 
+# 1. RAW_TEXT : raw text file
+# 2. JSON_GT : json file with ground truth
+# 3. JSONL_MODEL : jsonl file with model prediction and ground truth
+# 4. UAT (uat_results) : csv file with user annotation and ground truth
+parser.add_argument('--dataName', type = str, default = 'uat8910', help='data name')
+parser.add_argument('--dataType', type = str, default = 'JSONL_MODEL',
+                    choices=['RAW_TEXT', 'JSON_GT', 'JSONL_MODEL'],
+                     help = 'data type')
 
+parser.add_argument('--dataPath', type = str, default = config.rawPath,
+                    help = 'path to the data')
 
+args = parser.parse_args()
 
-if __name__ == '__main__':
-    
-    # load_json._test()
-    # augment_contrast._test()
-    # evaluate_bias._test()
-    # csv2json._test()
-
-    # convert2csv._test()
-    # preprocessing._test()
-
-    # eda._test()
-    # graph._test()
-    # word_bias._test()
-    # load_json._test()
+evaluate_bias._test()
