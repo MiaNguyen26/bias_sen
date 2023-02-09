@@ -8,7 +8,6 @@
                 2. Preprocessing those common words (remove stopwords and get words have freq>10)
                 3. Get proposed bias words
 
-        
 """
 import data_ana.eda_test as eda_test
 from configs import config
@@ -34,14 +33,13 @@ class WordBIAS():
 
     def get_common_each_aspect(self):
         """
-        Return: a df contains the n most common, freq and percentage words in each aspect
+        Input: df , which was preprocessed, contains many columns but must have post_id, text, aspect, processed (text)
+        Return: a df contains the n most common words, freq and percentage words in each aspect
                 which has n rows and 26 columns, each column is a aspect
 
         """
         dfSumCommon = pd.DataFrame()
         listDf = []
-        propertyList = ['common_words', 'freq', 'percent', 'char_count']
-        header = []
 
         for aspect in config.listAspect:
 
@@ -55,7 +53,7 @@ class WordBIAS():
                 #all words in an aspect
                 allwords += wordList
 
-            #number of words in an aspect
+            #number of words in an aspect (also auplicate words)
             freq_words = len(allwords)
             if not allwords:
                 continue
@@ -87,8 +85,8 @@ class WordBIAS():
 
         dfSumCommon = pd.concat(listDf, axis=1)
         
-        dfSumCommon.to_csv(os.path.join(config.edaPath, 'common_words_each_aspect.csv'), index=False)
-
+        # dfSumCommon.to_csv(os.path.join(config.edaPath, 'common_words_each_aspect.csv'), index=False)
+        dfSumCommon.to_csv(config.commonFile, index=False)
         return mostcommon
 
 
@@ -119,9 +117,6 @@ class WordBIAS():
         aspectList = list(set(aspects))
   
         for aspect in aspectList:
-        # for aspect in config.listAspect:
-
-
             #aspect List
             aspect_header = [aspect]*4
 
@@ -166,10 +161,6 @@ class WordBIAS():
         #get list aspects in dataframe
 
         for idx, this_aspect in enumerate(tqdm(aspectList)):
-        # for idx, this_aspect in enumerate(config.listAspect):
-            # next_idx = (idx+1)%len(config.listAspect)
-            # next_aspect = config.listAspect[(idx+1)%len(config.listAspect)]
-            # idxList = np.arange(idx+1, len(config.listAspect)).tolist()
             idxList = np.arange(idx+1, len(aspectList)).tolist()
 
             #get this(aspect) word value
@@ -230,16 +221,11 @@ class WordBIAS():
             dfBias.to_csv(config.biasFile, index=False)
 
       
-    
-    
-
-    
-
 def  _test():
     df = pd.read_csv(config.preprocessFile)
     a = WordBIAS(df)
-    # common = a.get_common_each_aspect()
-    # process = a.preprocess_word_common()
+    common = a.get_common_each_aspect()
+    process = a.preprocess_word_common()
     bias = a.get_proposed_bias()
 
 

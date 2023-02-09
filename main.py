@@ -1,5 +1,6 @@
 import argparse
 # from data_loader import convert2csv
+from configs.config import GetArgs
 from data_ana import evaluate_bias
 
 parser = argparse.ArgumentParser(description = 'Convert data to csv format')
@@ -12,10 +13,14 @@ parser.add_argument('--dataName', type = str, default = 'uat8910', help='data na
 parser.add_argument('--dataType', type = str, default = 'JSONL_MODEL',
                     choices=['RAW_TEXT', 'JSON_GT', 'JSONL_MODEL'],
                      help = 'data type')
-
-parser.add_argument('--dataPath', type = str, default = config.rawPath,
-                    help = 'path to the data')
-
+parser.add_argument('--rawData', type = str, default = 'home/user/Desktop/review/data/predict_bias_uat8_9_10.json',
+                    help = 'path to the data (model output)')
+parser.add_argument('--freq_threshBias', type = int, default = 10, 
+                    help = 'Frequency threshold for common words to find proposed bias')
+parser.add_argument('--num_commonWord', type=int, default=100, 
+                    help = "Number of common words to find for each aspect")
 args = parser.parse_args()
+
+params = GetArgs(dataName= args.dataName, freq_threshhold = args.freq_threshBias, num_commonWord = args.num_commonWord)
 
 evaluate_bias._test()

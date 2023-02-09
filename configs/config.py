@@ -9,12 +9,22 @@ import datetime
 now = datetime.datetime.now()
 ttime = '{}{}_{}{}'.format(now.month, now.day, now.hour, now.minute)
 
+class GetArgs():
+    def __init_(self, dataName='uat', freq_threshold=10, num_common=100):
+        self.dataName = dataName
+        self.freqThreshold = freq_threshold
+        self.numCommon = num_common
+
+    def getArgs(self):
+        return self.dataName, self.freqThreshold, self.numCommon
+    
+var = GetArgs()
+dataName, freqThreshold, numCommon = var.getArgs()
+
+
 
 #---------------- constant ---------------
-num_common = 100
-num_sample = 300
-freq_threshold = 10
-dataName = 'uat8_9_10'
+num_sample = 300 #for create positive and negative samples
 # 26 aspects
 listAspect = ['Dọn dẹp chung', 'An ninh', 'Dịch vụ bổ sung', 
             'Dọn dẹp nhà thầu', 'Dọn dẹp khác', 'Giá tiền khác', 'Giá tiền phòng', 
@@ -64,13 +74,18 @@ emoji_pattern = re.compile("["
 parentPath = '/home/user/Desktop/review'
 
 #----------------Path for proposed method to find word bias-------------
-#-----path for processed file
-#common words file
-commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect_'+ dataName+'.csv')
-#word_bias preprocessed file
-wordbiasFile = os.path.join(parentPath, 'data', 'word_bias_preprocess_'+ dataName+ '.csv')
-#word_bias file
-biasFile = os.path.join(parentPath, 'data', 'word_bias_'+ dataName+'.csv')
+#-----path of RAW data file: text, model output json file--------
+rawPath = os.path.join(parentPath, 'data/predict_bias_uat8_9_10.json')
+#path of csv (after data_loader)
+csvPath = os.path.join(parentPath, 'data/raw_data', 'dict.csv')
+
+#-----path for processed file--------------------
+# #common words file
+# commonFile = os.path.join(parentPath, 'data', 'common_words_each_aspect_'+ dataName+'.csv')
+# #word_bias preprocessed file
+# wordbiasFile = os.path.join(parentPath, 'data', 'word_bias_preprocess_'+ dataName+ '.csv')
+# #word_bias file
+# biasFile = os.path.join(parentPath, 'data', 'word_bias_'+ dataName+'.csv')
 
 # -------------------Path for word bias evaluate-----------------------
 #path for file to create dictionary
@@ -83,7 +98,7 @@ dictionaryFile = os.path.join(parentPath, 'data', 'vocab_95.txt')
 biasSample = os.path.join(parentPath, 'data', 'sample_bias_'+dataName+ '.json')
 commonSample = os.path.join(parentPath, 'data', 'sample_common_'+dataName+ '.json')
 
-#path to load predict bias and common words
+#path to load predicnt results (from model) for bias and common-word non-sense samples
 biasPredict = os.path.join(parentPath, 'data', 'predict_bias_'+dataName+ '.json')
 commonPredict = os.path.join(parentPath, 'data', 'predict_common_'+dataName+ '.json')
 
@@ -91,25 +106,45 @@ commonPredict = os.path.join(parentPath, 'data', 'predict_common_'+dataName+ '.j
 #-----path of stopword file
 stopwordFile = os.path.join(parentPath, 'data/stopwords.txt')
 
-#-----path of RAW data file
-rawPath = os.path.join(parentPath, 'data/predict_bias_uat8_9_10.json')
-#path of csv (after converted path)
-csvPath = os.path.join(parentPath, 'data/raw_data', 'dict.csv')
 
 #path of loading preprocessed data file
-preprocessFile = os.path.join(parentPath, 'results/preprocess',
-                                    'preprocess_113_1045.csv')
+# preprocessFile = os.path.join(parentPath, 'results/preprocess',
+#                                     'preprocess_113_1045.csv')
                                 # 'preprocess_112_1823.csv')
 
+
+# ------------------- Path to save when deploying --------------------
 #path for Data Augmentation
 positiveFile = os.path.join(parentPath,'data/augmentation' , 'positive.txt')
 negativeFile = os.path.join(parentPath,'data/augmentation' , 'negative.txt')
 linkingFile = os.path.join(parentPath,'data/augmentation' , 'linking.txt')
 
+#path to save preprocessed data file
+# preprocessName = 'preprocess_{}{}_{}{}.csv'.format(now.month, now.day, now.hour, now.minute)
+preprocessName = 'preprocess_{}.csv'.format(dataName)
+# preprocessPath = os.path.join(parentPath, 'results/preprocess', preprocessName)
+preprocessFile = os.path.join(parentPath, 'results/preprocess', preprocessName)
 
+#path to save graph
+graphFolder = os.path.join(parentPath, 'results/graph')
+# graphPath = os.path.join(graphFolder, ttime+ '_'+ dataName)
+graphPath = os.path.join(graphFolder, dataName)
 
-#-------------Path to save result----------------
+#path to save eda result
+edaFolder = os.path.join(parentPath, 'results/eda')
+# edaPath = os.path.join(edaFolder, ttime+'_'+dataName)
+edaPath = os.path.join(edaFolder, dataName)
 
+#path to save common words each aspect
+commonFile = os.path.join(edaPath, 'common_words_each_aspect_'+ dataName +'.csv')
+#word_bias preprocessed file: frequency threshold + remove stopwords
+wordbiasFile = os.path.join(edaPath, 'data', 'word_bias_preprocess_'+ dataName+ '.csv')
+#word_bias file
+biasFile = os.path.join(edaPath, 'word_bias_'+ dataName+'.csv')
+
+"""
+
+#-------------Path to save result when testing----------------
 
 #path to save preprocessed data file
 preprocessName = 'preprocess_{}{}_{}{}.csv'.format(now.month, now.day, now.hour, now.minute)
@@ -133,3 +168,4 @@ processedFile = os.path.join(parentPath, 'results/eda/1216_1545', 'processed.csv
 augmentFolder = os.path.join(parentPath, 'results/augmentation')
 augmentPath = os.path.join(augmentFolder, ttime)
 
+"""

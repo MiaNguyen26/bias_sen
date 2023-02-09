@@ -2,7 +2,7 @@
         Date Created: 2023-02-03
         Date Modified: 2023-02-03
         Author: Mia Nguyen
-        Description: -Creat custom dictionary from scarping data 
+        Description:- Creat custom dictionary from scarping data 
                         output: txt file
                     - Generate non-sense samples from custom dictionary
                         output: json file (for model input)
@@ -32,9 +32,11 @@ from configs import config
                         # yỳỷỹýỵz]+')
 
 
-class CustomDictionary():
+class Vocab():
     """
     Description: Create custom dictionary from craping data and save to txt file
+    Input: scraping data (json format)
+    Output: txt file. Each line is a word in dictionary
     """
 
     def __init__(self):
@@ -271,7 +273,7 @@ class Predict():
         """
         Input: jsonl file (model output) contains text, id, ground truth aspects, model prediction aspects, etc.
         Return: a dataframe contains 4 columns: id, text, expected_aspect, predicted_aspect
-                
+                #NOTICE: set path to save that dataframe
         """
         dataList = []
         with open(input) as f:
@@ -296,7 +298,6 @@ class Predict():
         dfJSONL.reset_index(drop=True, inplace=True)
         dfJSONL.to_csv(os.path.join(config.parentPath, 'data', 'predict_bias_uat'+ '.csv'), index=False)     
         return dataList
-
 
 
 class Evaluate():
@@ -383,6 +384,7 @@ class Evaluate():
 
         return precision, recall
 
+
 class Graph_bias():
     def __init__(self):
         self.biasPrecisionPath = os.path.join(config.parentPath, 'data', 'precision_bias'+ '.csv')
@@ -404,7 +406,7 @@ class Graph_bias():
 
 
 def _test():
-    # vocab = CustomDictionary()
+    # vocab = Vocab()
     # vocab.create_dictionary_freq()
 
     # sample = GenerateSample()
