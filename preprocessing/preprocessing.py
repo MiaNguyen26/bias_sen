@@ -2,7 +2,6 @@
 import os, sys
 import pandas as pd
 import numpy as np
-import re
 import string
 import re
 import pyvi

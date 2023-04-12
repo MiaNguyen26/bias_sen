@@ -9,7 +9,7 @@
                 3. Get proposed bias words
 
 """
-import data_ana.eda_test as eda_test
+# import data_ana.eda_test as eda_test
 from configs import config
 
 import numpy as np

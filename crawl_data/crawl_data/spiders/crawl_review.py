@@ -4,11 +4,14 @@ from crawl_data.items import CrawlDataItem
 from crawl_data.settings import CHROME_DRIVER_PATH
 
 from selenium import webdriver
-# from scrapy.selector import Selector
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 # from scrapy.utils.project import get_project_settings
 import time
+import numpy as np
 import pandas as pd
 import requests
 import json
@@ -16,38 +19,72 @@ import math
 from bs4 import BeautifulSoup
 
 
+
+
 # --------------scraping from Agoda by bs4 ---------------
 class CrawlAgoda(scrapy.Spider):
     name = 'agoda_scraping'
     allowed_domains = ['agoda.com']
     start_urls = [
-                    'https://www.agoda.com/vi-vn/city/c-n-tho-vn.html',
+                    'https://www.agoda.com/vi-vn/search?city=16079',
+                    # 'https://www.agoda.com/vi-vn/city/c-n-tho-vn.html',
                     # 'https://www.tripadvisor.com.vn/Hotels-g298184-Tokyo_Tokyo_Prefecture_Kanto-Hotels.html',
                 
                 ]
 
     def parse(self, response):
+
+        # url = 'https://www.agoda.com/vi-vn/search?city=16079'
+        # r = requests.get(url)
+        # soup = BeautifulSoup(r.content, 'html5lib')
+        # with open('data.json', 'w', encoding='utf-8') as f:
+        #     json.dump(r.content, f, ensure_ascii=False, indent=4)
+
         driver_path = CHROME_DRIVER_PATH
         driver = webdriver.Chrome(driver_path)
         driver.get(response.url)
         time.sleep(2)
+        button_next = driver.find_element(By.ID, 'paginationNext')
         try:
-            print('maaaa11111111111111')
-            # seeALL_button = driver.find_element(By.CLASS_NAME, 'div.fMuMFt > div.hRUYUu> span.kkSkZk')
-            seeALL_button = driver.find_element(By.XPATH, "//div[@class='fMuMFt']/div[@class='hRUYUu']/span[@class='kkSkZk']")
-            print('maaaaaa')
-            seeALL_button.click()
-            print('maaa clickkkkkkkkkk')
-            time.sleep(30)
+            driver.execute_script("arguments[0].click();",button_next)
+            print('okkk')
+            time.sleep(60)
         except:
-                driver.quit()
+            driver.quit()
+            
+
+        # try:
+        #     wait = WebDriverWait(driver, 10)
+        #     print('maaaa11111111111111')
+       
+        #     searchlink = driver.find_element(By.XPATH, "//div[@class='Searchbox Searchbox--horizontal']")
+        #     action = webdriver.common.action_chains.ActionChains(driver)
+        #     action.move_to_element_with_offset(searchlink, 0, 200)
+        #     action.click()
+        #     action.perform()
+        #     # seeALL_button = driver.find_element(By.CLASS_NAME, 'div.fMuMFt > div.hRUYUu> span.kkSkZk')
+        #     # seeALL_button = driver.find_element(By.XPATH, "//button[@class='dVXUwx']/div[@class='fMuMFt']/div[@class='hRUYUu']/span[@class='kkSkZk']")
+        #     seeALL_button = driver.find_element(By.XPATH, "//button[@class='Buttonstyled__ButtonStyled-sc-5gjk6l-0 dVXUwx']")
+
+        #     # seeALL_button = driver.find_element(By.CLASS_NAME, 'Spanstyled__SpanStyled-sc-16tp9kb-0.kkSkZk.kite-js-Span')
+        #     print('maaaaaa')
+
+        #     # seeALL_button.click()
+        #     driver.execute_script("arguments[0].click();", seeALL_button)
+        
+        #     wait = WebDriverWait(driver, 10)
+        #     button_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='Buttonstyled__ButtonStyled-sc-5gjk6l-0 dVXUwx']")))
+        #     print('maaa clickkkkkkkkkk')
+        #     time.sleep(20)
+        # except:
+        #         driver.quit()
 
 
 
 
 
 
-# # --------------scraping from Agoda by hidden apis ----------------
+# --------------scraping from Agoda by hidden apis ----------------
 # class CrawlAgoda(scrapy.Spider):
 #     name = 'agoda_scraping'
 #     # allowed_domains = ['agoda.com']
@@ -834,7 +871,6 @@ class CrawlAgoda(scrapy.Spider):
 
 
 
-# """
     
 # --------------scraping from Tripadvisor----------------
 # class CrawlReviewSpider(scrapy.Spider):
@@ -1014,5 +1050,4 @@ class CrawlAgoda(scrapy.Spider):
 #         # except:
 #         #     driver.quit()
 #         # driver.quit()
-
 

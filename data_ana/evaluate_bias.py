@@ -349,6 +349,8 @@ class Evaluate():
                 dictBias[this_bias][0] += 1
                 count_actual += 1
 
+                
+
         #calculate precision and recall for each bias
         for bias in dictBias:
             precision = dictBias[bias][0] / (dictBias[bias][0] + dictBias[bias][1])
