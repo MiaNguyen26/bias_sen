@@ -1,5 +1,5 @@
 
-# **EDA for sentiment data**
+# **EDA for sen data**
 
 
 ## **Preprocessing**
